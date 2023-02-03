@@ -1,0 +1,11 @@
+---
+# vars file for dotnet-ms
+  link: https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm
+  os_ver: 22.04
+  deb_microsoft_key: "https://packages.microsoft.com/config/ubuntu/{{ os_ver }}/packages-microsoft-prod.deb"
+  deb_package: packages-microsoft-prod.deb
+  sdk_ver: 6.0
+  install_sdk: "dotnet-sdk-{{ sdk_ver }}"
+  install_https_cert: apt-transport-https
+  runtime_ver: 6.0
+  install_runtime: "aspnetcore-runtime-{{ runtime_ver }}"
