@@ -1,0 +1,7 @@
+---
+# vars file for nodejs-multidistro
+dest: /home/shaik/shaik.sh
+deb_package: deb
+rpm_package: rpm
+package_name: nodejs
+version: 14.x
