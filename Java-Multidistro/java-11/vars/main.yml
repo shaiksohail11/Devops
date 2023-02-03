@@ -1,0 +1,5 @@
+---
+# vars file for java-11
+
+ubuntu_openjdk_version: 11
+centos_java_11: java-11-openjdk-devel

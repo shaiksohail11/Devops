@@ -1,0 +1,6 @@
+---
+- name: installing java-11 on ubuntu nd centos
+  hosts: all
+  become: yes
+  roles:
+    - java-11

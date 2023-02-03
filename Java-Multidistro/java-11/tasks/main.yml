@@ -1,0 +1,23 @@
+---
+# tasks file for java-11
+
+    - name: add openjdk apt repository
+      apt_repository:
+        repo: ppa:openjdk-r/ppa
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+    - name: update package cache
+      apt:
+        update_cache: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Install openjdk
+      apt:
+        name: "openjdk-{{ ubuntu_openjdk_version }}-jdk"
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+    - name: installing java devolopment key on cent os
+      ansible.builtin.yum:
+        name: "{{ centos_java_11 }}"
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
