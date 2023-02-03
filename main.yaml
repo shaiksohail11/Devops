@@ -1,0 +1,6 @@
+---
+- name: ADDING DOTNET ROLE
+  hosts: all
+  become: yes
+  roles:
+    - dotnet

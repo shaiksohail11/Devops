@@ -1,0 +1,50 @@
+---
+# tasks file for dotnet-ms
+
+    - name: update cache
+      ansible.builtin.yum:
+        update_cache: yes
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: downloading deb-microsoft-key
+      ansible.builtin.get_url:
+        url: "{{ link }}" 
+        dest: .
+        mode: "777"
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: 
+      ansible.builtin.yum:
+        name: 
+          - ./packages-microsoft-prod.rpm
+          - dotnet-sdk-7.0
+          - aspnetcore-runtime-7.0
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
+
+    - name: downloading deb-microsoft-key
+      ansible.builtin.get_url:
+        url: "{{ deb_microsoft_key }}" 
+        dest: .
+        mode: "777"
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Install a .deb package
+      ansible.builtin.apt:
+        deb: ./packages-microsoft-prod.deb 
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: installing dotnet sdk
+      ansible.builtin.package:
+        name:
+          - "{{ install_https_cert }}"
+          - "{{ install_sdk }}"
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: update cache
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: installing netcore runtime
+      ansible.builtin.package:
+        name: 
+          - "{{ install_https_cert }}"
+          - "{{ install_runtime }}"
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
