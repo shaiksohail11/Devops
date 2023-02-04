@@ -1,0 +1,97 @@
+---
+- name: Installing Jboss on ubuntu 22.04
+  become: yes
+  hosts: all
+  vars:
+    java: default-jdk
+    user: wildfly
+    group: wildfly
+    Jboss_shell: /sbin/nologin
+    jboss_url: https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.tar.gz
+    jboss_dest: /tmp/
+  tasks:
+    - name: installing openjdk-ll
+      ansible.builtin.apt:
+        name: "{{ java }}"
+        update_cache: yes
+        state: present
+    - name: installing wget
+      ansible.builtin.apt:
+        name: wget
+        update_cache: yes
+        state: present
+    - name: creating group 
+      ansible.builtin.group:
+        name: "{{ group }}"
+        system: true
+        state: present
+    - name: create and adding user to the group
+      ansible.builtin.user:
+        name: "{{ user }}"
+        create_home: yes
+        group: "{{ group }}"
+        home: /opt/wildfly
+        shell: "{{ Jboss_shell }}"
+        system: true
+        state: present
+    - name: installing wildfly using jboss_url
+      ansible.builtin.get_url:
+        url: "{{ jboss_url }}"
+        dest: "{{ jboss_dest }}"
+        mode: '0440'
+    - name: untar the wildfly.tar file
+      ansible.builtin.unarchive:
+        src: /tmp/wildfly-27.0.1.Final.tar.gz
+        dest: /tmp/
+        owner: "{{ user}}"
+        group: "{{ group }}"
+        remote_src: yes
+        mode: '777'
+    - name: moving wildfile
+      ansible.builtin.copy:
+        src: /tmp/wildfly-27.0.1.Final/
+        dest: /opt/wildfly
+        owner: "{{user}}"
+        group: "{{group}}"
+        remote_src: yes
+        mode: '777'
+    - name: copying files
+      ansible.builtin.copy:
+        src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf
+        dest: /etc/wildfly/
+        owner: "{{ user}}"
+        group: "{{ group }}"
+        remote_src: yes
+        mode: '777'
+    - name: copying files
+      ansible.builtin.copy:
+        src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service
+        dest: /etc/systemd/system/
+        owner: "{{ user}}"
+        group: "{{ group }}"
+        remote_src: yes
+        mode: '777'
+    - name: copying files
+      ansible.builtin.copy:
+        src: /opt/wildfly/docs/contrib/scripts/systemd/launch.sh
+        dest: /opt/wildfly/bin/
+        owner: "{{ user}}"
+        group: "{{ group }}"
+        remote_src: yes
+        mode: '777'
+    - name: changing the ownership of /opt/wildfly
+      ansible.builtin.file:
+        path: /opt/wildfly
+        owner: "{{ user }}"
+        group: "{{ group}}"
+        recurse: yes
+        mode: '777'
+    - name: start service wildfly, if not started
+      ansible.builtin.systemd:
+        name: wildfly
+        daemon_reload: true
+        state: started
+        enabled: true
+        
+
+
