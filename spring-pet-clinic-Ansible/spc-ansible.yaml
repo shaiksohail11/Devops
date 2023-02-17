@@ -1,0 +1,32 @@
+---
+- name: Deploying spc app..
+  hosts: all
+  become: yes
+  tasks:
+    - name: installing java and maven
+      ansible.builtin.apt:
+        update_cache: yes
+        name:
+          - openjdk-17-jdk
+          - maven
+        state: present
+    - name: downloading spc war file
+      ansible.builtin.get_url:
+        url: https://12hchvj.s3.amazonaws.com/spring-petclinic-3.0.0-SNAPSHOT.jar
+        dest: /home/ubuntu/
+        mode: "777"
+    - name: copying spc service file
+      ansible.builtin.copy:
+        src: /home/ubuntu/spring.service
+        dest: /etc/systemd/system/spring.service
+        mode: "777" 
+
+    - name: reload,enable,start
+      ansible.builtin.systemd:
+        name: spring.service
+        daemon_reload: yes
+        enabled: true
+        state: started
+
+
+      
