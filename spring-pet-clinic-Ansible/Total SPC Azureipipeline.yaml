@@ -1,0 +1,41 @@
+---
+pool:
+  name: shaik
+trigger:
+  - develop
+parameters:
+  - name: bucket_name
+    displayName: creating bucket
+    type: string
+    default: 12hchvj
+  - name: package_name
+    displayName: package name
+    type: string
+    default: spring-petclinic-3.0.0-SNAPSHOT.jar
+stages:
+  - stage: BuildStage
+    displayName: CI
+    jobs:
+      - job: mavenjob
+        displayName: maven
+        steps:
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              goals: 'package'
+              publishJUnitResults: true
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              javaHomeOption: 'Path'
+              jdkDirectory: /usr/lib/jvm/java-17-openjdk-amd64
+              mavenVersionOption: 'Path'
+              mavenDirectory: /opt/maven
+          - script: aws s3 cp $(Build.SourcesDirectory)/target/spring-petclinic-3.0.0-SNAPSHOT.jar s3://12hchvj --acl public-read-write
+            displayName: uploading jar file to s3
+  - stage: RunStage
+    displayName: CI
+    jobs:
+      - job: ansibleJob
+        displayName: run through ansible
+        steps:
+          - script: "ansible-playbook -i hosts main.yaml"
+            workingDirectory: /home/ubuntu/
