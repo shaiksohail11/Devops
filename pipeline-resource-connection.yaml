@@ -1,0 +1,20 @@
+---
+pool:
+  name: "Azure Pipelines"
+  vmImage: "ubuntu-latest"
+
+trigger:
+  - main
+
+resources:
+  repositories:
+    - repository: 'spring-petclinic'
+      name: 'shaiklearning/spring-petclinic'
+      endpoint: 'github.com_shaiksohail11'
+      ref: 'refs/heads/main'
+      type: 'github'
+
+steps:
+  - template: ./maven-reusable-template.yaml@spring-petclinic
+    parameters:
+      jdkVersion: '1.8'
